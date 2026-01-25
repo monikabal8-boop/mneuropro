@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNEURO™ — Игри за подсъзнанието</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; overflow-x: hidden; }
+        .hyperspace { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, #1a1a0a 0%, #000 70%); z-index: -1; }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; perspective: 500px; z-index: 0; }
+        .star { position: absolute; width: 2px; height: 2px; background: #ffd700; border-radius: 50%; animation: fly linear infinite; }
+        @keyframes fly { from { transform: translateZ(-500px); opacity: 0; } 10% { opacity: 1; } to { transform: translateZ(500px); opacity: 0; } }
+        .back-btn { position: fixed; top: 30px; left: 30px; z-index: 100; display: flex; align-items: center; gap: 10px; color: rgba(255, 215, 0, 0.7); text-decoration: none; font-size: 0.9rem; letter-spacing: 2px; transition: all 0.3s ease; }
+        .back-btn:hover { color: #ffd700; transform: translateX(-5px); }
+        .back-btn svg { width: 24px; height: 24px; fill: currentColor; }
+        .container { position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 50px; }
+        .brand { font-size: 2rem; font-weight: 700; color: #ffd700; letter-spacing: 6px; margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+        .tagline { font-size: 1rem; color: rgba(255, 215, 0, 0.6); letter-spacing: 4px; }
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 700px; width: 100%; }
+        .game-card { position: relative; background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 20px; padding: 30px 20px; text-decoration: none; text-align: center; transition: all 0.3s ease; }
+        .game-card:hover { transform: translateY(-5px); border-color: rgba(255, 215, 0, 0.5); box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2); }
+        .game-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .game-title { font-size: 1.1rem; font-weight: 600; color: #ffd700; letter-spacing: 2px; margin-bottom: 8px; }
+        .game-desc { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); }
+        @media (max-width: 600px) { .games-grid { grid-template-columns: 1fr; } .back-btn { top: 20px; left: 20px; } .brand { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="hyperspace"></div>
+    <div class="stars-container" id="stars"></div>
+    <a href="/" class="back-btn"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>НАЗАД</a>
+    <div class="container">
+        <header class="header"><h1 class="brand">⚡ ИГРИ</h1><p class="tagline">Трансформирай подсъзнанието</p></header>
+        <div class="games-grid">
+            <a href="/games/saberi-sila/" class="game-card"><span class="game-icon">⚡</span><div class="game-title">СЪБЕРИ СИЛА</div><div class="game-desc">Натрупай енергия</div></a>
+            <a href="/games/alpha-wave/" class="game-card"><span class="game-icon">💜</span><div class="game-title">РЕЛАКС</div><div class="game-desc">Алфа вълни</div></a>
+            <a href="/games/izgoni-straha/" class="game-card"><span class="game-icon">💨</span><div class="game-title">ИЗГОНИ СТРАХА</div><div class="game-desc">Освободи се</div></a>
+            <a href="/games/saberi-pobedi/" class="game-card"><span class="game-icon">🏆</span><div class="game-title">СЪБЕРИ ПОБЕДИ</div><div class="game-desc">Постигни успех</div></a>
+        </div>
+    </div>
+    <script>const c=document.getElementById('stars');for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDuration=(2+Math.random()*3)+'s';s.style.animationDelay=Math.random()*3+'s';c.appendChild(s);}</script>
+</body>
+</html>

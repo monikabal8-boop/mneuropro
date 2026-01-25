@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mneuro: Събери сила</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .container { width: 100vw; height: 100vh; position: relative; }
+        
+        .screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .hidden { display: none !important; }
+        
+        .logo { font-size: 14px; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-bottom: 30px; }
+        .logo span { color: #4facfe; font-weight: bold; }
+        
+        .title {
+            font-size: 28px; font-weight: bold; margin-bottom: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .description { font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 10px; line-height: 1.6; }
+        .subtitle { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 40px; }
+        
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none; border-radius: 30px;
+            padding: 18px 60px; font-size: 18px; font-weight: 600;
+            color: white; cursor: pointer;
+            box-shadow: 0 10px 40px rgba(79, 172, 254, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover { transform: translateY(-3px); }
+        
+        .btn-pink {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+            text-decoration: none; display: inline-block; margin-bottom: 15px;
+        }
+        
+        .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
+        
+        .game-area { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        
+        .header {
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 15px 20px; display: flex; justify-content: space-between;
+            z-index: 50;
+        }
+        
+        .timer { font-size: 36px; font-weight: bold; color: #4facfe; }
+        .timer.urgent { color: #f5576c; }
+        .score span { font-size: 24px; font-weight: bold; }
+        
+        .word {
+            position: absolute;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+            z-index: 10;
+            user-select: none;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        
+        .word:hover { transform: scale(1.1); background: white !important; color: #333; }
+        
+        .c1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .c2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .c3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .c4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .c5 { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .c6 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        
+        .collected { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 340px; margin-bottom: 20px; }
+        .collected span { padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+        
+        .result-title { font-size: 20px; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+        .result-msg { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 20px; max-width: 280px; }
+    </style>
+</head>
+<body>
+    <a href="/games/" style="position:fixed;top:20px;left:20px;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;z-index:100;">← Назад</a>
+    <div class="container">
+        <!-- Start -->
+        <div class="screen" id="start">
+            <div class="logo"><span>MNEURO</span> игра</div>
+            <div style="font-size:70px; margin-bottom:20px;">⚡</div>
+            <h1 class="title">Събери сила</h1>
+            <p class="description">15 секунди фокус.<br>Спри мислите. Събери ресурс.</p>
+            <p class="subtitle">Кликни върху думите, за да ги събереш</p>
+            <button class="btn" id="startBtn">Старт</button>
+        </div>
+        
+        <!-- Game -->
+        <div class="screen hidden" id="game" style="padding:0;">
+            <div class="header">
+                <div class="timer" id="timer">15</div>
+                <div class="score"><span id="scoreNum">0</span></div>
+            </div>
+            <div class="game-area" id="gameArea"></div>
+        </div>
+        
+        <audio id="bgMusic" loop preload="auto">
+            <source src="music-power.mp3" type="audio/mpeg">
+        </audio>
+        
+        <!-- Result -->
+        <div class="screen hidden" id="result">
+            <div class="logo"><span>MNEURO</span></div>
+            <p class="result-title">Твоят ресурс днес:</p>
+            <div class="collected" id="collected"></div>
+            <p class="result-msg" id="resultMsg"></p>
+            <a href="https://www.monikabalayan.com/kursove" target="_blank" class="btn btn-pink">Открий курсовете на Mneuro →</a>
+            <button class="btn btn-outline" id="againBtn">Играй отново</button>
+        </div>
+    </div>
+    
+    <script>
+        const words = ['Сила', 'Смелост', 'Увереност', 'Победа', 'Мощ', 'Воля', 'Радост', 'Любов', 'Щастие', 'Спокойствие', 'Хармония', 'Нежност', 'Веселие', 'Успех', 'Богатство', 'Изобилие', 'Растеж', 'Мъдрост', 'Талант', 'Признание', 'Здраве', 'Енергия', 'Жизненост', 'Баланс', 'Лекота', 'Свежест', 'Вяра', 'Надежда', 'Благодарност', 'Светлина', 'Чудо', 'Свобода', 'Покой'];
+        const colors = ['c1','c2','c3','c4','c5','c6'];
+        
+        let time = 15;
+        let collected = [];
+        let gameTimer, spawnTimer;
+        
+        document.getElementById('startBtn').onclick = startGame;
+        document.getElementById('againBtn').onclick = restart;
+        
+        function startGame() {
+            document.getElementById('start').classList.add('hidden');
+            document.getElementById('game').classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+            
+            time = 15;
+            collected = [];
+            document.getElementById('timer').textContent = time;
+            document.getElementById('timer').classList.remove('urgent');
+            document.getElementById('scoreNum').textContent = '0';
+            document.getElementById('gameArea').innerHTML = '';
+            
+            // Start music
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.4;
+            music.currentTime = 0;
+            music.play().catch(e => {});
+            
+            spawnWord();
+            spawnWord();
+            spawnWord();
+            spawnTimer = setInterval(spawnWord, 300);
+            gameTimer = setInterval(tick, 1000);
+        }
+        
+        function tick() {
+            time--;
+            document.getElementById('timer').textContent = time;
+            if (time <= 5) document.getElementById('timer').classList.add('urgent');
+            if (time <= 0) endGame();
+        }
+        
+        function spawnWord() {
+            if (time <= 0) return;
+            
+            const w = document.createElement('div');
+            const txt = words[Math.floor(Math.random() * words.length)];
+            const col = colors[Math.floor(Math.random() * colors.length)];
+            
+            w.className = 'word ' + col;
+            w.textContent = txt;
+            w.style.left = Math.max(10, Math.random() * (window.innerWidth - 120)) + 'px';
+            w.style.top = '-50px';
+            
+            w.onmousedown = function(e) { e.preventDefault(); catchWord(w, txt); };
+            w.ontouchstart = function(e) { e.preventDefault(); catchWord(w, txt); };
+            
+            document.getElementById('gameArea').appendChild(w);
+            
+            let y = -50;
+            const fall = setInterval(function() {
+                if (time <= 0 || !w.parentElement) { clearInterval(fall); return; }
+                y += 3;
+                w.style.top = y + 'px';
+                if (y > window.innerHeight) { w.remove(); clearInterval(fall); }
+            }, 20);
+        }
+        
+        function catchWord(w, txt) {
+            collected.push(txt);
+            document.getElementById('scoreNum').textContent = collected.length;
+            w.style.pointerEvents = 'none';
+            w.style.opacity = '0';
+            w.style.transform = 'scale(1.5)';
+            setTimeout(function() { w.remove(); }, 200);
+        }
+        
+        function endGame() {
+            clearInterval(gameTimer);
+            clearInterval(spawnTimer);
+            
+            document.getElementById('game').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+            
+            const c = document.getElementById('collected');
+            c.innerHTML = '';
+            
+            if (collected.length === 0) {
+                c.innerHTML = '<p style="color:rgba(255,255,255,0.6);font-size:18px;">Опитай отново!</p>';
+                document.getElementById('resultMsg').textContent = 'Фокусирай се и лови думите!';
+            } else {
+                var unique = [...new Set(collected)];
+                unique.forEach(function(txt, i) {
+                    const s = document.createElement('span');
+                    s.className = colors[i % colors.length];
+                    s.textContent = txt;
+                    c.appendChild(s);
+                });
+                document.getElementById('resultMsg').textContent = 'Събра ' + collected.length + ' думи! Това е твоят ресурс.';
+            }
+        }
+        
+        function restart() {
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('start').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNEURO™ — Бързи резултати</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000; min-height: 100vh; overflow-x: hidden; cursor: crosshair; }
+        .hyperspace { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, #0a0a1a 0%, #000 70%); z-index: -1; }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; perspective: 500px; z-index: 0; }
+        .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: fly linear infinite; }
+        @keyframes fly { from { transform: translateZ(-500px); opacity: 0; } 10% { opacity: 1; } to { transform: translateZ(500px); opacity: 0; } }
+        .container { position: relative; z-index: 10; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .header { text-align: center; margin-bottom: 60px; }
+        .brand { font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: 8px; margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+        .tagline { font-size: 1rem; color: rgba(255, 255, 255, 0.6); letter-spacing: 4px; margin-bottom: 15px; }
+        .subtitle { font-size: 0.9rem; color: rgba(255, 255, 255, 0.4); }
+        .portals { display: flex; gap: 60px; flex-wrap: wrap; justify-content: center; align-items: center; }
+        .portal { position: relative; width: 200px; height: 200px; cursor: pointer; transition: transform 0.3s ease; text-decoration: none; }
+        .portal:hover { transform: scale(1.1); }
+        .portal-rings { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid; animation: pulse-ring 2s ease-in-out infinite; }
+        .portal.gold .ring { border-color: rgba(255, 215, 0, 0.6); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(255, 215, 0, 0.1); }
+        .portal.gold .ring:nth-child(1) { width: 180px; height: 180px; }
+        .portal.gold .ring:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.3s; }
+        .portal.gold .ring:nth-child(3) { width: 100px; height: 100px; animation-delay: 0.6s; }
+        .portal.gold .ring:nth-child(4) { width: 60px; height: 60px; animation-delay: 0.9s; }
+        .portal.gold .portal-core { background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 170, 0, 0.4) 50%, transparent 70%); box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); }
+        .portal.gold .portal-label { color: #ffd700; }
+        .portal.blue .ring { border-color: rgba(0, 150, 255, 0.6); box-shadow: 0 0 20px rgba(0, 150, 255, 0.3), inset 0 0 20px rgba(0, 150, 255, 0.1); }
+        .portal.blue .ring:nth-child(1) { width: 180px; height: 180px; }
+        .portal.blue .ring:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.3s; }
+        .portal.blue .ring:nth-child(3) { width: 100px; height: 100px; animation-delay: 0.6s; }
+        .portal.blue .ring:nth-child(4) { width: 60px; height: 60px; animation-delay: 0.9s; }
+        .portal.blue .portal-core { background: radial-gradient(circle, rgba(0, 150, 255, 0.8) 0%, rgba(0, 100, 200, 0.4) 50%, transparent 70%); box-shadow: 0 0 60px rgba(0, 150, 255, 0.5); }
+        .portal.blue .portal-label { color: #0096ff; }
+        .portal.purple .ring { border-color: rgba(180, 0, 255, 0.6); box-shadow: 0 0 20px rgba(180, 0, 255, 0.3), inset 0 0 20px rgba(180, 0, 255, 0.1); }
+        .portal.purple .ring:nth-child(1) { width: 180px; height: 180px; }
+        .portal.purple .ring:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.3s; }
+        .portal.purple .ring:nth-child(3) { width: 100px; height: 100px; animation-delay: 0.6s; }
+        .portal.purple .ring:nth-child(4) { width: 60px; height: 60px; animation-delay: 0.9s; }
+        .portal.purple .portal-core { background: radial-gradient(circle, rgba(180, 0, 255, 0.8) 0%, rgba(120, 0, 200, 0.4) 50%, transparent 70%); box-shadow: 0 0 60px rgba(180, 0, 255, 0.5); }
+        .portal.purple .portal-label { color: #b400ff; }
+        .portal-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; animation: core-pulse 1.5s ease-in-out infinite; }
+        .portal-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; z-index: 5; }
+        .portal-label { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); font-size: 1rem; font-weight: 600; letter-spacing: 3px; white-space: nowrap; }
+        .portal:hover .ring { animation: vortex 1s linear infinite; }
+        .portal:hover .portal-core { animation: core-intense 0.5s ease-in-out infinite; }
+        @keyframes pulse-ring { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
+        @keyframes vortex { 0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); } 50% { transform: translate(-50%, -50%) scale(0.95) rotate(180deg); } 100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); } }
+        @keyframes core-pulse { 0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+        @keyframes core-intense { 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); } }
+        .portal-particles { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; opacity: 0; }
+        .portal:hover .particle { animation: suck-in 1s ease-in infinite; }
+        .portal.gold .particle { background: #ffd700; }
+        .portal.blue .particle { background: #0096ff; }
+        .portal.purple .particle { background: #b400ff; }
+        @keyframes suck-in { 0% { opacity: 1; transform: translate(var(--start-x), var(--start-y)) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); } }
+        .footer { margin-top: 60px; text-align: center; }
+        .cta-link { color: rgba(255, 255, 255, 0.6); text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease; border-bottom: 1px solid transparent; }
+        .cta-link:hover { color: #fff; border-bottom-color: #fff; }
+        @media (max-width: 768px) {
+            .brand { font-size: 1.8rem; letter-spacing: 4px; }
+            .portals { gap: 40px; }
+            .portal { width: 150px; height: 150px; }
+            .portal .ring:nth-child(1) { width: 140px !important; height: 140px !important; }
+            .portal .ring:nth-child(2) { width: 110px !important; height: 110px !important; }
+            .portal .ring:nth-child(3) { width: 80px !important; height: 80px !important; }
+            .portal .ring:nth-child(4) { width: 50px !important; height: 50px !important; }
+            .portal-core { width: 60px; height: 60px; }
+            .portal-label { font-size: 0.8rem; bottom: -30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hyperspace"></div>
+    <div class="stars-container" id="stars"></div>
+    <div class="container">
+        <header class="header">
+            <h1 class="brand">MNEURO™</h1>
+            <p class="tagline">— БЪРЗИ РЕЗУЛТАТИ —</p>
+            <p class="subtitle">Порталът към подсъзнанието</p>
+        </header>
+        <div class="portals">
+            <a href="/games/" class="portal gold">
+                <div class="portal-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">⚡</div>
+                <div class="portal-particles">
+                    <div class="particle" style="--start-x: -100px; --start-y: -50px;"></div>
+                    <div class="particle" style="--start-x: 100px; --start-y: -30px; animation-delay: 0.2s;"></div>
+                    <div class="particle" style="--start-x: -80px; --start-y: 60px; animation-delay: 0.4s;"></div>
+                </div>
+                <span class="portal-label">ИГРИ</span>
+            </a>
+            <a href="/tests/" class="portal blue">
+                <div class="portal-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">📋</div>
+                <div class="portal-particles">
+                    <div class="particle" style="--start-x: -100px; --start-y: -50px;"></div>
+                    <div class="particle" style="--start-x: 100px; --start-y: -30px; animation-delay: 0.2s;"></div>
+                    <div class="particle" style="--start-x: -80px; --start-y: 60px; animation-delay: 0.4s;"></div>
+                </div>
+                <span class="portal-label">ТЕСТОВЕ</span>
+            </a>
+            <a href="/predictions/" class="portal purple">
+                <div class="portal-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+                <div class="portal-core"></div>
+                <div class="portal-icon">🔮</div>
+                <div class="portal-particles">
+                    <div class="particle" style="--start-x: -100px; --start-y: -50px;"></div>
+                    <div class="particle" style="--start-x: 100px; --start-y: -30px; animation-delay: 0.2s;"></div>
+                    <div class="particle" style="--start-x: -80px; --start-y: 60px; animation-delay: 0.4s;"></div>
+                </div>
+                <span class="portal-label">ПРЕДСКАЗАНИЯ</span>
+            </a>
+        </div>
+        <footer class="footer">
+            <a href="https://www.monikabalayan.com/kursove" class="cta-link">Открий курсовете на Mneuro →</a>
+        </footer>
+    </div>
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDuration = (2 + Math.random() * 3) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>

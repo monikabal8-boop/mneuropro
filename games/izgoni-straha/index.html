@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mneuro: Изгони страха</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            background: #000;
+            transition: background 1s ease;
+        }
+
+        #gameArea {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Cloud shape */
+        .fear {
+            position: absolute;
+            cursor: pointer;
+            user-select: none;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            transition: transform 0.2s ease;
+        }
+
+        .fear:hover {
+            transform: scale(1.1);
+        }
+
+        .fear:active {
+            transform: scale(0.95);
+        }
+
+        .cloud {
+            position: relative;
+            width: 120px;
+            height: 50px;
+            background: #1a1a1a;
+            border-radius: 50px;
+            box-shadow: 
+                inset 0 -5px 15px rgba(0,0,0,0.5),
+                inset 0 5px 15px rgba(50,50,50,0.3);
+        }
+
+        .cloud::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            top: -25px;
+            left: 20px;
+            box-shadow: 
+                inset 0 -3px 10px rgba(0,0,0,0.5),
+                inset 0 3px 10px rgba(50,50,50,0.3);
+        }
+
+        .cloud::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 55px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            top: -30px;
+            left: 45px;
+            box-shadow: 
+                inset 0 -3px 10px rgba(0,0,0,0.5),
+                inset 0 3px 10px rgba(50,50,50,0.3);
+        }
+
+        .fear-text {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #aaa;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        /* Flash effect */
+        .flash {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,180,0,0.5) 40%, transparent 70%);
+            animation: flash-expand 0.6s ease-out forwards;
+        }
+
+        @keyframes flash-expand {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #ffd700;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: sparkle-fly 0.8s ease-out forwards;
+        }
+
+        @keyframes sparkle-fly {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+        }
+
+        .center-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+        }
+
+        .brand {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #ffd700;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .icon { font-size: 2.5rem; margin-bottom: 15px; }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            color: #ffd700;
+            margin-bottom: 30px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+            color: #000;
+            border: none;
+            padding: 20px 70px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .game-ui {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            text-align: center;
+            display: none;
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+
+        .timer {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            display: none;
+        }
+
+        .timer-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            transition: width 0.1s linear;
+        }
+
+        .results { display: none; }
+
+        .results.victory {
+            color: #000;
+        }
+
+        .sun-rays {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            background: 
+                repeating-conic-gradient(
+                    from 0deg at 50% 30%,
+                    rgba(255, 255, 200, 0.3) 0deg 10deg,
+                    transparent 10deg 20deg
+                );
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .sun-rays.visible {
+            opacity: 1;
+        }
+
+        .results-brand {
+            font-size: 1.1rem;
+            color: #5a4020;
+            letter-spacing: 4px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .results-score {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .results-label {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .results-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .results-detail {
+            font-size: 1rem;
+            margin-bottom: 35px;
+            opacity: 0.7;
+        }
+
+        .cta-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #8B5A2B 0%, #6B4423 100%);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 15px 40px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(107, 68, 35, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 68, 35, 0.4);
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+            color: #000;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <a href="/games/" style="position:fixed;top:20px;left:20px;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;z-index:100;">← Назад</a>
+    <a href="./" style="position:fixed;top:20px;left:20px;color:#333;text-decoration:none;font-size:0.9rem;z-index:100;font-weight:500;">← Назад</a>
+    <div id="gameArea"></div>
+    <audio id="bgMusic" loop preload="auto">
+        <source src="music-fear.mp3" type="audio/mpeg">
+    </audio>
+    <div class="sun-rays" id="sunRays"></div>
+
+    <div class="center-content" id="startScreen">
+        <div class="brand">MNEURO ИГРА</div>
+        <div class="icon">💨</div>
+        <h1>Изгони страха</h1>
+        <p class="subtitle">Кликай върху тъмните облаци.</p>
+        <p class="instructions">Изгони страховете с един клик!</p>
+        <button class="start-btn" onclick="startGame()">Старт</button>
+    </div>
+
+    <div class="game-ui" id="gameUI">
+        <div class="score-label">ИЗГОНЕНИ СТРАХОВЕ</div>
+        <div class="score" id="score">0</div>
+    </div>
+
+    <div class="timer" id="timer">
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+    </div>
+
+    <div class="center-content results" id="resultsScreen">
+        <div class="results-brand">MNEURO</div>
+        <div class="results-icon" id="resultsIcon">✨</div>
+        <div class="results-score" id="finalScore">0</div>
+        <p class="results-label">изгонени страхове</p>
+        <div class="results-message" id="resultMessage"></div>
+        <p class="results-detail" id="resultDetail"></p>
+        <a href="https://www.monikabalayan.com/kursove" class="cta-link">Открий курсовете на Mneuro →</a>
+        <br><br>
+        <button class="restart-btn" onclick="restartGame()">Играй отново</button>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const fearWords = ['страх', 'тревога', 'съмнение', 'паника', 'стрес', 'вина', 'срам', 'гняв'];
+        
+        let score = 0;
+        let gameRunning = false;
+        let spawnInterval;
+        let timerInterval;
+        let timeLeft = 25;
+        const gameDuration = 25;
+        const maxScore = 25; // For background calculation
+
+        function updateBackground() {
+            // Gradual transition from black to light golden - entire screen evenly
+            const progress = Math.min(score / maxScore, 1);
+            
+            // Black -> Light golden (no radial, just flat color)
+            const r = Math.round(progress * 255);
+            const g = Math.round(progress * 240);
+            const b = Math.round(progress * 180);
+            
+            document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        function createFear() {
+            if (!gameRunning) return;
+
+            const fear = document.createElement('div');
+            fear.className = 'fear';
+            
+            // Cloud element
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            
+            // Random size
+            const scale = 0.8 + Math.random() * 0.6;
+            cloud.style.transform = `scale(${scale})`;
+            
+            // Text
+            const text = document.createElement('div');
+            text.className = 'fear-text';
+            text.textContent = fearWords[Math.floor(Math.random() * fearWords.length)];
+            
+            fear.appendChild(cloud);
+            fear.appendChild(text);
+            
+            // Random position - avoid overlapping with existing fears
+            const padding = 60;
+            const fearWidth = 200;  // larger spacing
+            const fearHeight = 150; // larger spacing
+            let x, y;
+            let attempts = 0;
+            let validPosition = false;
+            
+            while (!validPosition && attempts < 30) {
+                x = padding + Math.random() * (window.innerWidth - padding * 2 - fearWidth);
+                y = padding + Math.random() * (window.innerHeight - padding * 2 - fearHeight);
+                
+                // Check if overlaps with existing fears
+                validPosition = true;
+                const existingFears = gameArea.querySelectorAll('.fear');
+                for (let existing of existingFears) {
+                    const ex = parseFloat(existing.style.left);
+                    const ey = parseFloat(existing.style.top);
+                    
+                    // Check distance - need minimum 200px apart
+                    const dist = Math.sqrt((x - ex) ** 2 + (y - ey) ** 2);
+                    
+                    if (dist < 200) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                attempts++;
+            }
+            
+            fear.style.left = x + 'px';
+            fear.style.top = y + 'px';
+            
+            // Click handler
+            fear.onclick = (e) => {
+                e.stopPropagation();
+                destroyFear(fear);
+            };
+            
+            // Touch handler
+            fear.ontouchstart = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                destroyFear(fear);
+            };
+            
+            gameArea.appendChild(fear);
+            
+            // Fade in
+            fear.style.opacity = '0';
+            fear.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => fear.style.opacity = '1', 10);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (fear.parentNode) {
+                    fear.style.opacity = '0';
+                    setTimeout(() => fear.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function destroyFear(fear) {
+            if (!gameRunning) return;
+            
+            const rect = fear.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            // Flash effect
+            const flash = document.createElement('div');
+            flash.className = 'flash';
+            flash.style.width = '80px';
+            flash.style.height = '80px';
+            flash.style.left = (x - 40) + 'px';
+            flash.style.top = (y - 40) + 'px';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 600);
+            
+            // Sparkles
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = '✦';
+                sparkle.style.left = x + 'px';
+                sparkle.style.top = y + 'px';
+                sparkle.style.setProperty('--tx', (Math.random() - 0.5) * 100 + 'px');
+                sparkle.style.setProperty('--ty', (Math.random() - 0.5) * 100 + 'px');
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 800);
+            }
+            
+            // Remove fear
+            fear.remove();
+            
+            // Update score
+            score++;
+            document.getElementById('score').textContent = score;
+            
+            // Update background gradually
+            updateBackground();
+        }
+
+        function updateTimer() {
+            timeLeft -= 0.1;
+            const percent = (timeLeft / gameDuration) * 100;
+            document.getElementById('timerFill').style.width = percent + '%';
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'block';
+            document.getElementById('timer').style.display = 'block';
+            
+            score = 0;
+            timeLeft = gameDuration;
+            gameRunning = true;
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('timerFill').style.width = '100%';
+            document.body.style.background = '#000';
+            
+            // Start music
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.4;
+            music.currentTime = 0;
+            music.play().catch(e => {});
+            
+            // Spawn fears - not too many at once
+            spawnInterval = setInterval(createFear, 700);
+            
+            // Timer
+            timerInterval = setInterval(updateTimer, 100);
+            
+            // Create initial fears - more at start, spread out
+            for (let i = 0; i < 8; i++) {
+                setTimeout(createFear, i * 150);
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            clearInterval(spawnInterval);
+            clearInterval(timerInterval);
+            
+            gameArea.innerHTML = '';
+            
+            document.getElementById('gameUI').style.display = 'none';
+            document.getElementById('timer').style.display = 'none';
+            
+            const results = document.getElementById('resultsScreen');
+            results.style.display = 'block';
+            
+            document.getElementById('finalScore').textContent = score;
+            
+            let icon, message, detail;
+            if (score >= 20) {
+                icon = '☀️';
+                message = 'Перфектно! Светлината победи!';
+                detail = 'Ти изгони тъмнината от съзнанието си.';
+                results.classList.add('victory');
+                document.getElementById('sunRays').classList.add('visible');
+            } else if (score >= 15) {
+                icon = '🌟';
+                message = 'Много добре! Страховете отстъпват.';
+                detail = 'Светлината расте в теб.';
+            } else if (score >= 10) {
+                icon = '💫';
+                message = 'Добро начало!';
+                detail = 'Повтори за по-добър резултат.';
+            } else {
+                icon = '🌙';
+                message = 'Повтори докато постигнеш победа!';
+                detail = 'Всяко повторение те прави по-силен.';
+            }
+            
+            document.getElementById('resultsIcon').textContent = icon;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultDetail').textContent = detail;
+        }
+
+        function restartGame() {
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('resultsScreen').classList.remove('victory');
+            document.getElementById('sunRays').classList.remove('visible');
+            document.getElementById('startScreen').style.display = 'block';
+            document.body.style.background = '#000';
+        }
+    </script>
+</body>
+</html>

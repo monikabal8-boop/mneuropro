@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mneuro: Събери победи</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .brand {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #ffd700;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .instructions {
+            font-size: 0.85rem;
+            color: #ffd700;
+            margin-bottom: 25px;
+            opacity: 0.8;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+            color: #000;
+            border: none;
+            padding: 18px 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Game Area */
+        .game-area {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            font-size: 3rem;
+            cursor: pointer;
+            user-select: none;
+            animation: fall linear forwards;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .star:active {
+            transform: scale(0.9);
+        }
+
+        .star.gold {
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+        }
+
+        .star.gray {
+            filter: grayscale(100%) brightness(0.6);
+        }
+
+        .star.collected {
+            animation: collect 0.3s ease forwards;
+        }
+
+        .star.wrong {
+            animation: wrong 0.3s ease forwards;
+        }
+
+        @keyframes fall {
+            from { top: -50px; }
+            to { top: 110vh; }
+        }
+
+        @keyframes collect {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes wrong {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3) rotate(10deg); color: #ff4444; }
+            50% { transform: scale(1.3) rotate(-10deg); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .stat-value.negative {
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Results */
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .results-brand {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #ffd700;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .results-title {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .results-message {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .results-score {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .results-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .results-detail {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .cta-link:hover {
+            border-bottom-color: #ffd700;
+        }
+
+        .restart-btn {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Screen shake on wrong click */
+        .shake {
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <a href="/games/" style="position:fixed;top:20px;left:20px;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.9rem;z-index:100;">← Назад</a>
+    <audio id="bgMusic" loop preload="auto">
+        <source src="music-star.mp3" type="audio/mpeg">
+    </audio>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div id="startScreen">
+            <div class="brand">MNEURO ИГРА</div>
+            <div class="icon">🏆</div>
+            <h1>Събери победи</h1>
+            <p class="subtitle">15 секунди фокус.<br>Лови златните звезди. Избягвай сивите.</p>
+            <p class="instructions">Кликни само върху ⭐ златните звезди</p>
+            <button class="start-btn" onclick="startGame()">Старт</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" style="display: none;">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="timer">15</div>
+                    <div class="stat-label">секунди</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">победи</div>
+                </div>
+            </div>
+            <div class="game-area" id="gameArea"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="results">
+            <div class="results-brand">MNEURO</div>
+            <p class="results-title">Твоите победи днес:</p>
+            <div class="results-score" id="finalScore">0</div>
+            <p class="results-subtitle">златни звезди</p>
+            <div class="results-message" id="resultMessage"></div>
+            <p class="results-detail" id="resultDetail"></p>
+            <a href="https://www.monikabalayan.com/kursove" class="cta-link">Открий курсовете на Mneuro →</a>
+            <br><br>
+            <button class="restart-btn" onclick="restartGame()">Играй отново</button>
+        </div>
+    </div>
+
+    <script>
+        let timer = 15;
+        let score = 0;
+        let mistakes = 0;
+        let gameInterval;
+        let timerInterval;
+        let starId = 0;
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('gameArea').style.display = 'block';
+            
+            // Start music
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.4;
+            music.currentTime = 0;
+            music.play().catch(e => {});
+            
+            timer = 15;
+            score = 0;
+            mistakes = 0;
+            starId = 0;
+            document.getElementById('timer').textContent = timer;
+            document.getElementById('score').textContent = score;
+            document.getElementById('gameArea').innerHTML = '';
+
+            // Start timer
+            timerInterval = setInterval(() => {
+                timer--;
+                document.getElementById('timer').textContent = timer;
+                if (timer <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            // Spawn stars faster
+            gameInterval = setInterval(spawnStar, 250);
+            
+            // Initial burst of stars
+            for (let i = 0; i < 8; i++) {
+                setTimeout(spawnStar, i * 80);
+            }
+        }
+
+        function spawnStar() {
+            if (timer <= 0) return;
+
+            const gameArea = document.getElementById('gameArea');
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.id = 'star-' + starId++;
+            
+            // 70% gold, 30% gray
+            const isGold = Math.random() < 0.7;
+            star.classList.add(isGold ? 'gold' : 'gray');
+            star.textContent = '⭐';
+            star.dataset.gold = isGold;
+
+            // Random position - full screen
+            const maxX = window.innerWidth - 60;
+            star.style.left = Math.random() * maxX + 'px';
+            
+            // Random fall duration (1.5-3 seconds) - faster!
+            const duration = 1.5 + Math.random() * 1.5;
+            star.style.animationDuration = duration + 's';
+
+            star.onmousedown = () => clickStar(star);
+            star.ontouchstart = (e) => {
+                e.preventDefault();
+                clickStar(star);
+            };
+
+            gameArea.appendChild(star);
+
+            // Remove star after animation
+            setTimeout(() => {
+                if (star.parentNode) {
+                    star.remove();
+                }
+            }, duration * 1000 + 500);
+        }
+
+        function clickStar(star) {
+            if (star.classList.contains('collected') || star.classList.contains('wrong')) return;
+
+            const isGold = star.classList.contains('gold');
+
+            if (isGold) {
+                // Correct - gold star
+                star.classList.add('collected');
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                // Wrong - gray star
+                star.classList.add('wrong');
+                mistakes++;
+                document.getElementById('gameArea').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('gameArea').classList.remove('shake');
+                }, 300);
+            }
+
+            setTimeout(() => star.remove(), 300);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'block';
+            document.getElementById('resultsScreen').classList.add('fade-in');
+            
+            document.getElementById('finalScore').textContent = score;
+
+            // Messages based on score
+            let message, detail;
+            if (mistakes === 0 && score >= 10) {
+                message = "Перфектен фокус! 🎯";
+                detail = "Подсъзнанието ти знае какво иска.";
+            } else if (score >= 12) {
+                message = "Ти си победител! 🏆";
+                detail = "Твоят ум лови успеха автоматично.";
+            } else if (score >= 8) {
+                message = "Силен резултат! ⭐";
+                detail = "Продължавай да тренираш фокуса.";
+            } else if (score >= 5) {
+                message = "Добро начало! 💪";
+                detail = "Подсъзнанието ти се събужда.";
+            } else {
+                message = "Първа стъпка! 🌱";
+                detail = "Всеки път ставаш по-добър.";
+            }
+
+            if (mistakes > 0) {
+                detail += ` (${mistakes} грешки)`;
+            }
+
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultDetail').textContent = detail;
+        }
+
+        function restartGame() {
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('resultsScreen').classList.remove('fade-in');
+            document.getElementById('startScreen').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
