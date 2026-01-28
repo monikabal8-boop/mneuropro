@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест за присъствие</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0d0d0d;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #game-area {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #0d0d0d 100%);
+        }
+        
+        #main-shape {
+            width: 200px;
+            height: 200px;
+            background: #c0a080;
+            border-radius: 50%;
+            box-shadow: 0 0 80px rgba(192, 160, 128, 0.2);
+            transition: all 1.5s ease;
+        }
+        
+        #screen-start, #screen-countdown, #screen-result {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d0d0d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #screen-start h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 60px;
+            letter-spacing: 8px;
+            color: #c0a080;
+        }
+        
+        #screen-start p {
+            font-size: 1.4rem;
+            font-weight: 300;
+            margin: 12px 0;
+            opacity: 0.6;
+            letter-spacing: 1px;
+        }
+        
+        #screen-start .instruction {
+            margin-top: 40px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #c0a080;
+            letter-spacing: 2px;
+        }
+        
+        #start-btn {
+            margin-top: 80px;
+            background: transparent;
+            border: 1px solid #c0a080;
+            color: #c0a080;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 20px 60px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #start-btn:hover {
+            background: #c0a080;
+            color: #0d0d0d;
+        }
+        
+        #screen-countdown {
+            font-size: 12rem;
+            font-weight: 300;
+            color: #c0a080;
+            letter-spacing: 10px;
+        }
+        
+        #timer {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 3px;
+        }
+        
+        #screen-result h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            margin-bottom: 60px;
+            opacity: 0.6;
+        }
+        
+        .result-number {
+            font-size: 10rem;
+            font-weight: 300;
+            color: #c0a080;
+            line-height: 1;
+        }
+        
+        .result-label {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-top: 20px;
+            opacity: 0.5;
+        }
+        
+        .interpretation {
+            margin-top: 80px;
+            max-width: 600px;
+            text-align: center;
+            line-height: 2;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+        
+        #restart-btn {
+            margin-top: 60px;
+            background: transparent;
+            border: 1px solid rgba(192,160,128,0.3);
+            color: rgba(192,160,128,0.5);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            padding: 15px 40px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #restart-btn:hover {
+            border-color: #c0a080;
+            color: #c0a080;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-area">
+        
+        <div id="screen-start">
+            <h1>ПРИСЪСТВИЕ</h1>
+            <p>Гледай фигурата в центъра.</p>
+            <p>Тя ще се променя. Леко, почти незабележимо.</p>
+            <p class="instruction">Преброй всяка промяна.</p>
+            <button id="start-btn">ЗАПОЧНИ</button>
+        </div>
+        
+        <div id="screen-countdown" class="hidden"></div>
+        
+        <div id="screen-result" class="hidden">
+            <h2>ПРОМЕНИ</h2>
+            <div class="result-number" id="total-changes">0</div>
+            <div class="result-label">Колко преброихте?</div>
+            <div class="interpretation">
+                Точният брой е тук.<br>
+                По-малко означава, че сте пропуснали нещо.<br>
+                Повече означава, че умът ви е добавил нещо.
+            </div>
+            <button id="restart-btn">ОТНОВО</button>
+        </div>
+        
+        <div id="main-shape"></div>
+        <div id="timer"></div>
+        
+    </div>
+    
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const mainShape = document.getElementById('main-shape');
+        const screenStart = document.getElementById('screen-start');
+        const screenCountdown = document.getElementById('screen-countdown');
+        const screenResult = document.getElementById('screen-result');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const timerEl = document.getElementById('timer');
+        const totalChangesEl = document.getElementById('total-changes');
+        
+        let changeCount = 0;
+        let timeLeft = 60;
+        let timerInterval;
+        let gameRunning = false;
+        
+        // Текущи стойности
+        let currentSize = 200;
+        let currentRadius = 50;     // процент, 50 = кръг
+        let currentColorIndex = 0;
+        
+        // Ясни, различими цветове
+        const colors = [
+            '#c0a080',  // бежово-златисто
+            '#a0c0a0',  // мента
+            '#c0a0b0',  // розово-бежово
+            '#a0b0c0',  // синьо-сиво
+            '#b0a0c0',  // лилаво-сиво
+            '#c0b0a0',  // топло бежово
+        ];
+        
+        function updateShape() {
+            mainShape.style.background = colors[currentColorIndex];
+            mainShape.style.width = currentSize + 'px';
+            mainShape.style.height = currentSize + 'px';
+            mainShape.style.borderRadius = currentRadius + '%';
+            mainShape.style.boxShadow = `0 0 80px ${colors[currentColorIndex]}40`;
+        }
+        
+        function makeSubtleChange() {
+            if (!gameRunning) return;
+            
+            const changeType = Math.floor(Math.random() * 2);
+            
+            if (changeType === 0) {
+                // Промяна на цвета
+                let newColorIndex;
+                do {
+                    newColorIndex = Math.floor(Math.random() * colors.length);
+                } while (newColorIndex === currentColorIndex);
+                currentColorIndex = newColorIndex;
+            } else {
+                // Промяна на размера
+                if (currentSize <= 180) {
+                    currentSize = currentSize + 20;
+                } else if (currentSize >= 220) {
+                    currentSize = currentSize - 20;
+                } else {
+                    currentSize = currentSize + (Math.random() > 0.5 ? 20 : -20);
+                }
+            }
+            
+            updateShape();
+            changeCount++;
+            
+            // Следваща промяна
+            if (gameRunning) {
+                const nextDelay = 2000 + Math.random() * 1000;
+                setTimeout(makeSubtleChange, nextDelay);
+            }
+        }
+        
+        function countdown(num, callback) {
+            screenCountdown.classList.remove('hidden');
+            
+            if (num > 0) {
+                screenCountdown.textContent = num;
+                setTimeout(() => countdown(num - 1, callback), 1000);
+            } else {
+                screenCountdown.classList.add('hidden');
+                callback();
+            }
+        }
+        
+        function resetShape() {
+            currentColorIndex = 0;
+            currentSize = 200;
+            currentRadius = 50;
+            updateShape();
+        }
+        
+        function startGame() {
+            changeCount = 0;
+            timeLeft = 60;
+            gameRunning = true;
+            
+            resetShape();
+            
+            timerEl.textContent = timeLeft + ' сек';
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft + ' сек';
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+            
+            // Първа промяна след 2 секунди
+            setTimeout(makeSubtleChange, 2000);
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            clearInterval(timerInterval);
+            timerEl.textContent = '';
+            
+            totalChangesEl.textContent = changeCount;
+            screenResult.classList.remove('hidden');
+        }
+        
+        startBtn.addEventListener('click', () => {
+            screenStart.classList.add('hidden');
+            countdown(3, startGame);
+        });
+        
+        restartBtn.addEventListener('click', () => {
+            screenResult.classList.add('hidden');
+            countdown(3, startGame);
+        });
+    </script>
+</body>
+</html>
