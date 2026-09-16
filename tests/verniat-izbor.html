@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MNEURO™ — Верният избор</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --blue:#2b9bff;--blue2:#00e0ff;--blue-soft:#7cc6ff;
+    --good:#3ef0a8;--bad:#ff5c7a;--gold:#ffd76a;
+    --panel-line:rgba(70,160,255,0.22);--ink:#eaf3ff;--muted:rgba(200,220,255,0.55);
+  }
+  html,body{height:100%;}
+  body{font-family:'Inter',sans-serif;background:#04060f;min-height:100vh;overflow-x:hidden;color:var(--ink);}
+  /* фон */
+  .bg{position:fixed;inset:0;z-index:-2;background:
+      radial-gradient(1100px 700px at 50% -12%,#12224a 0%,#0a1230 40%,#04060f 78%);}
+  .glow-orb{position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;}
+  .orb1{width:420px;height:420px;left:-120px;top:-80px;background:radial-gradient(circle,#1e5bff,transparent 70%);}
+  .orb2{width:380px;height:380px;right:-120px;bottom:-100px;background:radial-gradient(circle,#00c2ff,transparent 70%);animation:drift 14s ease-in-out infinite alternate;}
+  @keyframes drift{to{transform:translate(40px,-30px);}}
+  .stars{position:fixed;inset:0;z-index:-1;perspective:600px;}
+  .star{position:absolute;border-radius:50%;background:#bcd8ff;animation:fly linear infinite;}
+  @keyframes fly{from{transform:translateZ(-600px);opacity:0;}12%{opacity:1;}to{transform:translateZ(500px);opacity:0;}}
+
+  .back-btn{position:fixed;top:24px;left:24px;z-index:100;display:flex;align-items:center;gap:9px;color:rgba(140,198,255,0.75);text-decoration:none;font-size:0.82rem;letter-spacing:2px;transition:all .3s;}
+  .back-btn:hover{color:var(--blue2);transform:translateX(-4px);}
+  .back-btn svg{width:22px;height:22px;fill:currentColor;}
+  .sound-btn{position:fixed;top:20px;right:20px;z-index:100;width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--panel-line);background:rgba(20,40,80,0.5);color:var(--blue2);cursor:pointer;font-size:17px;
+    display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:.2s;}
+  .sound-btn:hover{border-color:var(--blue2);}
+
+  .container{position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:82px 18px 42px;}
+  .panel{width:100%;max-width:600px;position:relative;border-radius:26px;padding:40px 32px;
+    background:linear-gradient(180deg,rgba(18,32,64,0.72),rgba(8,14,32,0.82));
+    border:1px solid var(--panel-line);
+    box-shadow:0 40px 90px -34px rgba(0,0,0,.9),0 0 80px -40px rgba(43,155,255,.6),inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter:blur(10px);animation:rise .5s cubic-bezier(.2,.7,.2,1);overflow:hidden;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+  .eyebrow{text-align:center;letter-spacing:5px;font-size:0.66rem;font-weight:600;text-transform:uppercase;
+    color:var(--blue-soft);opacity:.8;margin-bottom:10px;}
+  h1{font-size:2rem;font-weight:800;line-height:1.12;margin:0 0 16px;text-align:center;letter-spacing:1px;
+    background:linear-gradient(100deg,#8fd0ff,#2b9bff 45%,#00e0ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(43,155,255,.25);}
+  h2{font-size:1.3rem;font-weight:700;text-align:center;letter-spacing:.5px;color:#bfe2ff;margin:0 0 14px;}
+  p{margin:0 0 15px;color:rgba(220,232,255,0.85);line-height:1.62;text-align:center;}
+  .rules{background:linear-gradient(180deg,rgba(43,155,255,0.1),rgba(43,155,255,0.04));border:1px solid var(--panel-line);
+    border-radius:14px;padding:14px 18px;font-size:0.92rem;color:rgba(210,228,255,0.8);text-align:center;}
+  .muted{color:var(--muted);font-size:0.78rem;}
+  .btn{display:inline-block;border:0;cursor:pointer;color:#001428;font-family:inherit;font-size:1rem;font-weight:700;
+    letter-spacing:1.5px;text-transform:uppercase;padding:16px 42px;border-radius:999px;text-decoration:none;
+    background:linear-gradient(135deg,#7ce0ff,#2b9bff);box-shadow:0 14px 34px -12px rgba(43,155,255,.9),inset 0 1px 0 rgba(255,255,255,.4);
+    transition:transform .18s,filter .2s,opacity .2s;}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.06);}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.35;cursor:default;transform:none;filter:none;}
+  .btn-course{color:#fff;background:linear-gradient(135deg,#ff8fc7,#f5576c);box-shadow:0 14px 34px -12px rgba(245,87,108,.7);}
+  .btn-ghost{background:transparent;color:var(--blue-soft);border:1.5px solid var(--panel-line);box-shadow:none;}
+  .btn-ghost:hover{border-color:var(--blue2);color:var(--blue2);filter:none;}
+
+  /* HUD */
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+  .chip{display:flex;flex-direction:column;gap:2px;padding:8px 16px;border-radius:14px;background:rgba(43,155,255,0.08);border:1px solid var(--panel-line);}
+  .chip .lab{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+  .chip .val{font-size:1.35rem;font-weight:800;color:#cfe8ff;}
+  .chip.points .val{color:var(--blue2);transition:color .2s,transform .2s;}
+  .chip.points .val.flash{color:var(--bad);transform:scale(1.18);}
+
+  /* арена, кръг + пръстен */
+  .arena{display:flex;flex-direction:column;align-items:center;gap:22px;padding:8px 0 2px;}
+  .ringwrap{position:relative;width:210px;height:210px;display:flex;align-items:center;justify-content:center;}
+  .ring{position:absolute;inset:0;transform:rotate(-90deg);}
+  .ring circle{fill:none;stroke-width:6;}
+  .ring .track{stroke:rgba(120,180,255,0.12);}
+  .ring .prog{stroke:url(#rg);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0;filter:drop-shadow(0 0 6px rgba(0,224,255,.7));}
+  .circle{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:0.98rem;font-weight:600;color:rgba(190,215,255,0.6);cursor:pointer;user-select:none;text-align:center;
+    background:radial-gradient(circle at 50% 38%,rgba(60,110,190,0.35),rgba(20,40,80,0.25));
+    border:1px solid rgba(120,180,255,0.25);box-shadow:inset 0 0 30px rgba(30,70,140,.4);
+    transition:transform .08s;animation:idle 3.4s ease-in-out infinite;}
+  @keyframes idle{0%,100%{box-shadow:inset 0 0 30px rgba(30,70,140,.4),0 0 0 rgba(43,155,255,0);}50%{box-shadow:inset 0 0 34px rgba(30,70,140,.5),0 0 26px rgba(43,155,255,.25);}}
+  .circle.lit{color:#00121f;font-weight:800;font-size:1.35rem;letter-spacing:1px;
+    background:radial-gradient(circle at 50% 40%,#eaffff,#31d0ff 55%,#0aa6ff);
+    border-color:#bff4ff;box-shadow:0 0 70px 14px rgba(0,224,255,.8),inset 0 0 30px rgba(255,255,255,.5);
+    animation:pop .18s ease;}
+  @keyframes pop{from{transform:scale(.82);}to{transform:scale(1);}}
+  .verdict{min-height:28px;font-weight:800;font-size:1.15rem;letter-spacing:.5px;}
+  .verdict.good{color:var(--good);text-shadow:0 0 18px rgba(62,240,168,.5);}
+  .verdict.bad{color:var(--bad);text-shadow:0 0 18px rgba(255,92,122,.4);}
+  .hint{text-align:center;color:var(--muted);font-size:0.88rem;min-height:20px;}
+
+  /* дишане */
+  .breath{width:150px;height:150px;border-radius:50%;margin:18px auto;position:relative;
+    background:radial-gradient(circle,rgba(0,224,255,0.4),rgba(43,155,255,0.06) 70%);
+    box-shadow:0 0 50px rgba(0,200,255,.35);}
+  .breath.calm{animation:breathe 10s ease-in-out infinite;}
+  .breath.fast{animation:breathe 3s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:scale(.68);}50%{transform:scale(1.15);}}
+  .steps{background:rgba(43,155,255,0.07);border:1px solid var(--panel-line);border-radius:14px;padding:14px 18px;margin:14px 0;color:rgba(220,232,255,0.85);line-height:1.7;text-align:center;}
+  .under{text-align:center;color:var(--muted);font-size:0.88rem;margin-top:2px;}
+  .note{text-align:center;color:var(--blue-soft);font-size:0.9rem;margin-top:10px;}
+
+  /* резултати */
+  .rows{display:grid;gap:12px;margin:10px 0 16px;}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-radius:14px;
+    background:linear-gradient(180deg,rgba(43,155,255,0.09),rgba(43,155,255,0.03));border:1px solid var(--panel-line);}
+  .row .k{color:rgba(210,228,255,0.75);font-size:0.9rem;}
+  .row .v{font-weight:800;color:var(--blue2);}
+  .bignum{font-size:3rem;font-weight:800;line-height:1;margin:4px 0 2px;
+    background:linear-gradient(100deg,#8fd0ff,#00e0ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .interpret{font-size:1.02rem;color:rgba(224,236,255,0.9);margin:6px 0 14px;line-height:1.6;text-align:center;}
+  .closing{color:var(--blue-soft);font-weight:500;font-size:0.92rem;margin-bottom:20px;text-align:center;}
+
+  /* победа: летящи частици */
+  .fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5;}
+  .spark{position:absolute;width:8px;height:8px;border-radius:50%;top:50%;left:50%;opacity:0;}
+  @keyframes burst{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3);}}
+  .trophy{font-size:2.4rem;animation:floaty 2.4s ease-in-out infinite;}
+  @keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  .hidden{display:none;}
+  @media (max-width:600px){.panel{padding:30px 22px;}h1{font-size:1.55rem;}.ringwrap{width:190px;height:190px;}.circle{width:134px;height:134px;}.back-btn{top:18px;left:18px;}}
+  @media (prefers-reduced-motion:reduce){.star,.orb2,.circle,.breath.calm,.breath.fast,.trophy{animation:none;}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="stars" id="stars"></div>
+
+<svg width="0" height="0"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#00e0ff"/><stop offset="1" stop-color="#2b9bff"/></linearGradient></defs></svg>
+
+<a href="/tests/" class="back-btn"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>НАЗАД</a>
+<button class="sound-btn" id="soundBtn" aria-label="Звук" title="Звук">🔊</button>
+
+<div class="container">
+
+  <!-- 1. Начало -->
+  <section id="intro" class="panel">
+    <div class="eyebrow">Mneuro тест</div>
+    <h1>Верният избор</h1>
+    <p>На екрана ще се появи кръг. В случаен момент той ще светне. Натисни точно когато светне, не по-рано и не по-късно.</p>
+    <div class="rules">Започваш със 100 точки. Всяка прибързаност или закъснение ти коства точки. Имаш ограничено време за всеки опит.</div>
+    <p class="center" style="margin-top:24px;"><button class="btn" id="startBtn">Започни</button></p>
+    <p class="muted center" style="margin-bottom:0;">Тестът е с образователна цел и не представлява медицинска диагноза.</p>
+  </section>
+
+  <!-- 2 и 5. Блок -->
+  <section id="game" class="panel hidden">
+    <div class="topbar">
+      <div class="chip points"><span class="lab">Точки</span><span class="val" id="points">100</span></div>
+      <div class="chip"><span class="lab">Опит</span><span class="val"><span id="attempt">1</span>/10</span></div>
+    </div>
+    <div class="arena">
+      <div class="ringwrap">
+        <svg class="ring" viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="46"/><circle class="prog" id="prog" cx="50" cy="50" r="46" pathLength="1"/></svg>
+        <div class="circle" id="circle">Приготви се</div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+    <div class="hint" id="hint">Натисни кръга, когато светне.</div>
+  </section>
+
+  <!-- 3. Резултат от първата част -->
+  <section id="mid" class="panel hidden">
+    <div class="eyebrow">Първа част</div>
+    <h2 id="midHead">Резултат</h2>
+    <div class="rows">
+      <div class="row"><span class="k">Точки</span><span class="v" id="midPoints">0</span></div>
+      <div class="row"><span class="k">Грешки</span><span class="v" id="midErrors">0</span></div>
+    </div>
+    <p class="interpret" id="midVerdict"></p>
+    <p class="muted center" id="midSub">Сега кратка пауза, за да настроиш тялото си.</p>
+    <p class="center" style="margin-top:18px;"><button class="btn" id="toPauseBtn">Продължи</button></p>
+  </section>
+
+  <!-- 4. Пауза -->
+  <section id="pause" class="panel hidden">
+    <div class="eyebrow">Пауза</div>
+    <h2 id="pauseTitle">Пауза</h2>
+    <p id="pauseText"></p>
+    <div class="breath" id="breath"></div>
+    <div class="under" id="pauseUnder"></div>
+    <div class="steps" id="pauseSteps"></div>
+    <p class="note">Целта не е да заспиш, нито да бързаш. Спокоен, но буден.</p>
+    <p class="center" style="margin-top:14px;"><button class="btn" id="toBlock2Btn" disabled>Продължи</button></p>
+  </section>
+
+  <!-- 6. Резултат -->
+  <section id="result" class="panel hidden">
+    <div class="fx" id="fx"></div>
+    <div class="eyebrow" id="resEyebrow">Резултат</div>
+    <div class="center" id="resTop"></div>
+    <h1 id="resHead" style="font-size:1.6rem;">Твоят резултат</h1>
+    <div class="rows">
+      <div class="row"><span class="k">Преди паузата</span><span class="v"><span id="p1">0</span> т, <span id="e1">0</span> гр.</span></div>
+      <div class="row"><span class="k">След паузата</span><span class="v"><span id="p2">0</span> т, <span id="e2">0</span> гр.</span></div>
+    </div>
+    <p class="interpret" id="finalText"></p>
+    <p class="closing">Най-точен си, когато тялото е спокойно, но будно. Нито напрегнато, нито отпуснато.</p>
+    <p class="center" style="margin-bottom:14px;"><a class="btn btn-course" href="https://www.monikabalayan.com/single-course.php?id=50" target="_blank" rel="noopener">Разгледай курса →</a></p>
+    <p class="center"><button class="btn btn-ghost" id="againBtn">Опитай отново</button></p>
+    <p class="muted center" style="margin:16px 0 0;">Тестът е с образователна цел и не представлява медицинска диагноза.</p>
+  </section>
+
+</div>
+
+<script>
+  var ATTEMPTS=10, PENALTY=10, WINDOW_MS=800, MIN_DELAY=600, MAX_DELAY=2000, PAUZA_SEK=20;
+  var el=function(id){return document.getElementById(id);};
+
+  (function(){var c=el('stars');for(var i=0;i<110;i++){var s=document.createElement('div');var sz=Math.random()<0.85?1.5:2.5;s.className='star';s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDuration=(2+Math.random()*3)+'s';s.style.animationDelay=Math.random()*3+'s';c.appendChild(s);}})();
+
+  /* звук */
+  var actx=null,muted=false;
+  function AA(){if(!actx){var A=window.AudioContext||window.webkitAudioContext;if(A)actx=new A();}if(actx&&actx.state==='suspended')actx.resume();}
+  function beep(f,st,d,ty,v){if(!actx||muted)return;var t=actx.currentTime+st;var o=actx.createOscillator(),g=actx.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v||0.18,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d+0.02);}
+  function sCue(){beep(920,0,0.13,'sine',0.22);}
+  function sGood(){beep(660,0,0.09,'sine',0.16);beep(990,0.07,0.13,'sine',0.16);}
+  function sBad(){beep(190,0,0.2,'triangle',0.2);}
+  function sWin(){var n=[523,659,784,1047,1319,1568];n.forEach(function(f,i){beep(f,i*0.12,0.34,'sine',0.16);});beep(1047,0.7,0.5,'sine',0.14);}
+  function sFin(){[523,659,784].forEach(function(f,i){beep(f,i*0.13,0.28,'sine',0.15);});}
+
+  var block,points,early,late,attempt,phase,dTimer,wTimer,res={};
+  function show(id){['intro','game','mid','pause','result'].forEach(function(s){el(s).classList.add('hidden');});el(id).classList.remove('hidden');}
+
+  function startBlock(n){block=n;points=100;early=0;late=0;attempt=0;el('points').textContent=100;el('attempt').textContent=1;show('game');next();}
+  function next(){
+    if(attempt>=ATTEMPTS){endBlock();return;}
+    el('attempt').textContent=attempt+1;
+    var v=el('verdict');v.textContent='';v.className='verdict';
+    el('hint').textContent='Натисни кръга, когато светне.';
+    var c=el('circle');c.classList.remove('lit');c.textContent='Приготви се';
+    resetRing();
+    phase='waiting';
+    dTimer=setTimeout(lightUp, randomDelay());
+  }
+  function randomDelay(){
+    var mode=Math.floor(Math.random()*3);
+    if(mode===0) return 400+Math.random()*600;      // бързо: 0.4 - 1.0 с
+    if(mode===1) return 1000+Math.random()*1500;     // средно: 1.0 - 2.5 с
+    return 2500+Math.random()*2500;                  // бавно: 2.5 - 5.0 с
+  }
+  function resetRing(){var p=el('prog');p.style.transition='none';p.style.strokeDashoffset='0';}
+  function lightUp(){
+    phase='lit';
+    var c=el('circle');c.classList.add('lit');c.textContent='Сега!';sCue();
+    var p=el('prog');p.style.transition='none';p.style.strokeDashoffset='0';void p.getBoundingClientRect();
+    p.style.transition='stroke-dashoffset '+WINDOW_MS+'ms linear';p.style.strokeDashoffset='1';
+    wTimer=setTimeout(function(){resolve('late');},WINDOW_MS);
+  }
+  function tap(){
+    if(phase==='waiting'){clearTimeout(dTimer);resolve('early');}
+    else if(phase==='lit'){clearTimeout(wTimer);resolve('good');}
+  }
+  function resolve(kind){
+    phase='done';var c=el('circle');c.classList.remove('lit');
+    var p=el('prog');p.style.transition='none';
+    var v=el('verdict');
+    if(kind==='good'){v.textContent='Точно!';v.className='verdict good';c.textContent='';sGood();}
+    else if(kind==='early'){v.textContent='Рано';v.className='verdict bad';c.textContent='';early++;loss();sBad();}
+    else{v.textContent='Късно';v.className='verdict bad';c.textContent='';late++;loss();sBad();}
+    attempt++;setTimeout(next,850);
+  }
+  function loss(){points=Math.max(0,points-PENALTY);var p=el('points');p.textContent=points;p.classList.add('flash');setTimeout(function(){p.classList.remove('flash');},240);}
+
+  function endBlock(){
+    if(block===1){
+      res.p1=points;res.e1=early+late;res.early1=early;res.late1=late;
+      el('midPoints').textContent=points;el('midErrors').textContent=early+late;
+      var t,sub='Сега кратка пауза, за да настроиш тялото си.';
+      if(early+late===0){
+        t='Отлично. В това състояние изборите ти са точни. Опитът показва, че когато тялото е спокойно и будно, решенията са верни.';
+        sub='Ако искаш да задържиш тялото си в това състояние, продължи към следващата стъпка.';
+      } else if(early>late) t='Прибързваш. Натискаш преди сигнала.';
+      else if(late>early) t='Закъсняваш. Натискаш след сигнала.';
+      else t='Реакциите ти скачат, понякога прибързваш, понякога закъсняваш.';
+      el('midVerdict').textContent=t;el('midSub').textContent=sub;show('mid');
+    } else {res.p2=points;res.e2=early+late;res.early2=early;res.late2=late;finalScreen();}
+  }
+
+  function setupPause(){
+    var title,text,steps,breathClass,under;
+    if(res.e1===0){
+      title='Задръж състоянието';text='Тялото ти вече е в добър баланс. Тази пауза е, за да го задържиш.';
+      steps='Дишай спокойно и равномерно. Остани спокоен, но буден.';under='Вдишвай, докато кръгът расте. Издишвай, докато се свива.';breathClass='breath calm';
+    } else if(res.early1>res.late1){
+      title='Успокой се';text='Тялото ти бърза. Трябва да го успокоиш.';
+      steps='Отпусни раменете и разхлаби челюстта. Дишай заедно с кръга и издишвай по-дълго, отколкото вдишваш.';under='Вдишвай, докато кръгът расте. Издишвай, докато се свива.';breathClass='breath calm';
+    } else if(res.late1>res.early1){
+      title='Събери се';text='Тялото ти е отпуснато и бавно. Трябва да го разбудиш.';
+      steps='Изправи гърба и вдигни главата. Поеми няколко бързи вдишвания. Стисни юмруци за миг и ги отпусни. Насочи погледа към кръга.';under='';breathClass='breath fast';
+    } else {
+      title='Хвани ритъма';text='Реакциите ти скачат. Влез в равномерен ритъм.';
+      steps='Изправи гърба. Дишай спокойно и равномерно, с еднаква дължина на вдишването и издишването. Гледай кръга и следвай ритъма му.';under='Вдишвай, докато кръгът расте. Издишвай, докато се свива.';breathClass='breath calm';
+    }
+    el('pauseTitle').textContent=title;el('pauseText').textContent=text;el('pauseSteps').textContent=steps;
+    el('breath').className=breathClass;el('pauseUnder').textContent=under;
+    var btn=el('toBlock2Btn');btn.disabled=true;var left=PAUZA_SEK;btn.textContent='Продължи след '+left+'с';
+    var iv=setInterval(function(){left--;if(left<=0){clearInterval(iv);btn.disabled=false;btn.textContent='Продължи';}else btn.textContent='Продължи след '+left+'с';},1000);
+    show('pause');
+  }
+
+  function confetti(){
+    var box=el('fx');box.innerHTML='';
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var cols=['#00e0ff','#2b9bff','#7cc6ff','#ffffff','#3ef0a8','#ffd76a'];
+    for(var i=0;i<48;i++){
+      var s=document.createElement('span');s.className='spark';
+      var ang=Math.random()*Math.PI*2,dist=90+Math.random()*260;
+      s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+      s.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(0)+'px');
+      s.style.background=cols[i%cols.length];
+      s.style.animation='burst '+(1+Math.random()*0.9).toFixed(2)+'s ease-out forwards';
+      s.style.animationDelay=(Math.random()*0.25).toFixed(2)+'s';
+      box.appendChild(s);
+    }
+  }
+
+  function finalScreen(){
+    el('p1').textContent=res.p1;el('e1').textContent=res.e1;el('p2').textContent=res.p2;el('e2').textContent=res.e2;
+    var perfect=(res.e1===0&&res.e2===0);
+    var t;
+    if(perfect){t='Задържа пълната точност и преди, и след паузата. Спокойното тяло прави верния избор всеки път.';}
+    else if(res.p2>res.p1||(res.p2===res.p1&&res.e2===0)){t='Виждаш го сам. Спокойното тяло направи по-верния избор. Тялото управлява решенията ти.';}
+    else if(res.early2>res.late2){t='Тялото ти е напрегнато и бърза. Стани, отпусни раменете и издишай бавно, по-дълго, отколкото вдишваш. После опитай пак.';}
+    else if(res.late2>res.early2){t='Твърде отпуснат си и реагираш бавно. Изправи гърба, поеми дълбоко дъх, събери вниманието си и опитай пак.';}
+    else{t='Реакциите ти скачат, понякога прибързваш, понякога закъсняваш. Изправи гърба и дишай равномерно, с еднаква дължина на вдишването и издишването, докато влезеш в ритъм. После опитай пак.';}
+    el('finalText').textContent=t;
+    var topEl=el('resTop');
+    if(perfect){
+      el('resEyebrow').textContent='Перфектно';
+      el('resHead').textContent='Пълна точност';
+      topEl.innerHTML='<div class="trophy">🏆</div><div class="bignum">100%</div>';
+      show('result');confetti();sWin();
+    } else {
+      el('resEyebrow').textContent='Резултат';
+      el('resHead').textContent='Твоят резултат';
+      topEl.innerHTML='';
+      show('result');sFin();
+    }
+  }
+
+  el('circle').addEventListener('click',tap);
+  el('game').addEventListener('click',function(e){if(e.target.id!=='circle')tap();});
+  el('soundBtn').addEventListener('click',function(){muted=!muted;this.textContent=muted?'🔇':'🔊';if(!muted)AA();});
+  el('startBtn').addEventListener('click',function(){AA();startBlock(1);});
+  el('toPauseBtn').addEventListener('click',setupPause);
+  el('toBlock2Btn').addEventListener('click',function(){startBlock(2);});
+  el('againBtn').addEventListener('click',function(){res={};startBlock(1);});
+</script>
+</body>
+</html>
