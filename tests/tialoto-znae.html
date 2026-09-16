@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MNEURO™ — Тялото знае преди теб</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--blue:#0096ff;--blue-soft:#4db8ff;--good:#43e97b;--bad:#ff5c72;--panel-line:rgba(0,150,255,0.25);}
+  body{font-family:'Inter',sans-serif;background:#000;min-height:100vh;overflow-x:hidden;color:#fff;}
+  .hyperspace{position:fixed;inset:0;background:radial-gradient(ellipse at center,#0a0a1a 0%,#000 70%);z-index:-1;}
+  .stars-container{position:fixed;inset:0;perspective:500px;z-index:0;}
+  .star{position:absolute;width:2px;height:2px;background:#0096ff;border-radius:50%;animation:fly linear infinite;}
+  @keyframes fly{from{transform:translateZ(-500px);opacity:0;}10%{opacity:1;}to{transform:translateZ(500px);opacity:0;}}
+  .back-btn{position:fixed;top:26px;left:26px;z-index:100;display:flex;align-items:center;gap:10px;color:rgba(0,150,255,0.7);text-decoration:none;font-size:0.85rem;letter-spacing:2px;transition:all .3s ease;}
+  .back-btn:hover{color:var(--blue);transform:translateX(-5px);}
+  .back-btn svg{width:22px;height:22px;fill:currentColor;}
+  .sound-btn{position:fixed;top:22px;right:22px;z-index:100;width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--panel-line);background:rgba(0,150,255,0.08);color:var(--blue);cursor:pointer;
+    font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .sound-btn:focus-visible{outline:3px solid var(--blue-soft);outline-offset:2px;}
+  .container{position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 18px 40px;}
+  .panel{width:100%;max-width:600px;background:linear-gradient(180deg,rgba(8,14,26,.9),rgba(6,10,20,.92));
+    border:1px solid var(--panel-line);border-radius:22px;padding:38px 30px;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.85),0 0 60px -30px rgba(0,150,255,.45);}
+  .icon{font-size:44px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 0 18px rgba(0,150,255,.55));}
+  h1{font-size:1.7rem;font-weight:700;line-height:1.2;margin:0 0 12px;text-transform:uppercase;letter-spacing:3px;
+    text-align:center;color:var(--blue);text-shadow:0 0 26px rgba(0,150,255,.55);}
+  .subtitle{color:rgba(0,150,255,0.7);font-size:0.85rem;font-weight:500;text-transform:uppercase;letter-spacing:3px;text-align:center;margin:0 0 16px;}
+  .pill{display:inline-block;background:rgba(0,150,255,0.2);color:var(--blue);font-size:0.72rem;font-weight:600;
+    letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:999px;}
+  p{margin:0 0 15px;color:rgba(255,255,255,0.8);line-height:1.6;}
+  .muted{color:rgba(255,255,255,0.45);font-size:0.8rem;}
+  .center{text-align:center;}
+  .btn{display:inline-block;appearance:none;border:0;cursor:pointer;color:#fff;font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#0096ff,#0066cc);text-decoration:none;
+    font-size:1rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:16px 40px;border-radius:999px;
+    box-shadow:0 12px 30px -10px rgba(0,150,255,.7);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.08);}
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:3px solid var(--blue-soft);outline-offset:3px;}
+  .btn-course{background:linear-gradient(135deg,#f093fb,#f5576c);box-shadow:0 12px 30px -10px rgba(245,87,108,.6);}
+  .btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.25);box-shadow:none;}
+  .btn-ghost:hover{border-color:var(--blue);color:var(--blue);filter:none;}
+  .pulse-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 6px;}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 0 rgba(0,150,255,.55);animation:beat 1.6s ease-out infinite;flex:none;}
+  @keyframes beat{0%{box-shadow:0 0 0 0 rgba(0,150,255,.5);}70%{box-shadow:0 0 0 15px rgba(0,150,255,0);}100%{box-shadow:0 0 0 0 rgba(0,150,255,0);}}
+  .signal-text{font-size:0.85rem;color:rgba(255,255,255,0.45);}
+  .topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;padding-right:44px;}
+  .stat-label{font-size:0.68rem;color:rgba(255,255,255,0.45);display:block;text-transform:uppercase;letter-spacing:2px;}
+  .stat-value{font-size:1.25rem;font-weight:700;}
+  .balance .stat-value{color:var(--blue);}
+  .progress{height:8px;border-radius:999px;background:rgba(0,150,255,0.12);overflow:hidden;margin-bottom:22px;}
+  .progress-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#0096ff,#4db8ff);transition:width .35s ease;}
+  .instruction{text-align:center;font-size:0.95rem;color:#fff;background:rgba(0,150,255,0.06);
+    border:1px solid var(--panel-line);border-radius:14px;padding:12px 14px;margin-bottom:22px;}
+  .decks{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .deck{appearance:none;font-family:'Inter',sans-serif;cursor:pointer;color:var(--blue);font-size:2.4rem;font-weight:700;
+    padding:26px 0;border-radius:16px;background:rgba(0,150,255,0.06);border:1px solid var(--panel-line);
+    transition:transform .1s ease,box-shadow .2s ease,border-color .2s ease;}
+  .deck:hover{transform:translateY(-4px);border-color:rgba(0,150,255,.6);box-shadow:0 16px 40px -14px rgba(0,150,255,.6);}
+  .deck:active{transform:translateY(1px);}
+  .deck:focus-visible{outline:3px solid var(--blue-soft);outline-offset:3px;}
+  .deck:disabled{cursor:default;}
+  .feedback{text-align:center;min-height:50px;margin-top:20px;display:flex;flex-direction:column;justify-content:center;gap:2px;}
+  .fb-win{color:var(--good);font-weight:700;font-size:1.05rem;}
+  .fb-loss{color:var(--bad);font-weight:700;font-size:1.05rem;}
+  .result-number{font-size:3.4rem;font-weight:700;line-height:1;margin:6px 0 4px;color:var(--blue);text-shadow:0 0 26px rgba(0,150,255,.6);}
+  .result-caption{color:rgba(255,255,255,0.45);font-size:0.8rem;margin-bottom:18px;}
+  .breakdown{display:grid;gap:8px;background:rgba(0,150,255,0.06);border:1px solid var(--panel-line);
+    border-radius:14px;padding:16px 18px;margin:18px 0;font-size:0.95rem;text-align:left;}
+  .breakdown div{display:flex;justify-content:space-between;}
+  .breakdown span:last-child{font-weight:700;color:var(--blue);}
+  .interpret{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:14px;}
+  .closing{color:var(--blue-soft);font-weight:500;font-size:0.95rem;margin-bottom:22px;}
+  .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4;}
+  .conf-piece{position:absolute;width:9px;height:13px;border-radius:2px;top:-20px;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(660px) rotate(540deg);opacity:.1;}}
+  .hidden{display:none;}
+  @media (max-width:600px){.panel{padding:30px 22px;}h1{font-size:1.35rem;letter-spacing:2px;}.deck{font-size:2rem;padding:22px 0;}.back-btn{top:18px;left:18px;}}
+  @media (prefers-reduced-motion:reduce){.dot,.star{animation:none;}.deck,.btn,.progress-fill{transition:none;}.conf-piece{animation:none;display:none;}}
+</style>
+</head>
+<body>
+<div class="hyperspace"></div>
+<div class="stars-container" id="stars"></div>
+<a href="/tests/" class="back-btn"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>НАЗАД</a>
+<button class="sound-btn" id="soundBtn" aria-label="Включи или изключи звука" title="Звук">🔊</button>
+
+<div class="container">
+
+  <section id="intro" class="panel">
+    <div class="icon" aria-hidden="true">🫀</div>
+    <h1>Тялото знае преди теб</h1>
+    <p class="subtitle">Тест на интуитивните решения</p>
+    <p class="center" style="margin-bottom:18px;"><span class="pill">≈ 3 мин</span></p>
+    <p>Пред теб има четири избора: A, B, C и D. С всеки избор печелиш монети, а понякога и губиш. Целта е да натрупаш възможно най-много монети за <span id="introTotal">40</span> хода.</p>
+    <p>Не ти е казано кой избор е изгоден и кой рисков. Ще откриеш това сам, докато играеш. Тялото ти често усеща разликата преди разума, затова преди всеки избор спри за две секунди и се вслушай в него.</p>
+    <div class="pulse-row"><span class="dot" aria-hidden="true"></span><span class="signal-text">Слушай сигнала на тялото си.</span></div>
+    <p class="center" style="margin-top:24px;"><button class="btn" id="startBtn">Започни теста</button></p>
+    <p class="muted center" style="margin-bottom:0;">Тестът е с образователна цел и не представлява медицинска диагноза.</p>
+  </section>
+
+  <section id="game" class="panel hidden">
+    <div class="topbar">
+      <div class="balance"><span class="stat-label">Баланс</span><span class="stat-value"><span id="balance">2000</span> монети</span></div>
+      <div style="text-align:right;"><span class="stat-label">Ход</span><span class="stat-value"><span id="trial">1</span> от <span id="total">40</span></span></div>
+    </div>
+    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="instruction">Спри за две секунди. Усети тялото си, преди да избереш.</div>
+    <div class="decks" id="decks">
+      <button class="deck" data-deck="A">A</button>
+      <button class="deck" data-deck="B">B</button>
+      <button class="deck" data-deck="C">C</button>
+      <button class="deck" data-deck="D">D</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </section>
+
+  <section id="result" class="panel center hidden">
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <h1>Твоят резултат</h1>
+    <div class="result-number" id="netNumber">0</div>
+    <div class="result-caption">нетен резултат (изгодни минус рискови избори)</div>
+    <p class="interpret" id="interpret"></p>
+    <div class="breakdown">
+      <div><span>Изгодни избори</span><span id="adv">0</span></div>
+      <div><span>Рискови избори</span><span id="dis">0</span></div>
+      <div><span>Краен баланс</span><span><span id="finalBalance">0</span> монети</span></div>
+    </div>
+    <p class="closing">Точно това умение, тялото да знае преди теб, тренираме в курса.</p>
+    <p class="center" style="margin-bottom:16px;"><a class="btn btn-course" href="https://www.monikabalayan.com/single-course.php?id=50" target="_blank" rel="noopener">Разгледай курса →</a></p>
+    <button class="btn btn-ghost" id="againBtn">Направи теста отново</button>
+  </section>
+
+</div>
+
+<script>
+  var HODOVE = 40;
+  var PROFILI = {
+    riskovChest: { pechalba:100, izgoden:false,
+      zaguba:[0,0,150,0,300,0,200,0,250,350, 0,350,0,250,200,0,300,150,0,0, 0,300,0,350,0,200,250,150,0,0, 350,200,250,0,0,0,150,300,0,0] },
+    riskovRyadko: { pechalba:100, izgoden:false,
+      zaguba:[0,0,0,0,0,0,0,0,1250,0, 0,0,0,1250,0,0,0,0,0,0, 1250,0,0,0,0,0,0,0,0,0, 0,1250,0,0,0,0,0,0,0,0] },
+    izgodenChest: { pechalba:50, izgoden:true,
+      zaguba:[0,0,50,0,50,0,50,0,50,50, 0,25,75,0,0,0,25,75,0,50, 0,0,0,50,25,50,0,0,75,50, 0,0,0,25,25,0,75,0,50,75] },
+    izgodenRyadko:{ pechalba:50, izgoden:true,
+      zaguba:[0,0,0,0,0,0,0,0,0,250, 0,0,0,0,0,0,0,0,0,250, 0,0,0,0,0,0,0,0,250,0, 0,0,0,0,250,0,0,0,0,0] }
+  };
+  var START=2000, balance, trial, tegleno, izbori, karta, zakliuchen;
+  var el=function(id){return document.getElementById(id);};
+  function razburkai(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function razburkaiPoBlok(src){var out=src.slice();for(var b=0;b<out.length;b+=10){var bl=out.slice(b,b+10);razburkai(bl);for(var k=0;k<bl.length;k++)out[b+k]=bl[k];}return out;}
+  (function(){var c=el('stars');if(!c)return;for(var i=0;i<90;i++){var s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDuration=(2+Math.random()*3)+'s';s.style.animationDelay=Math.random()*3+'s';c.appendChild(s);}})();
+  var audioCtx=null, muted=false;
+  function ensureAudio(){if(!audioCtx){var AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC();}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();}
+  function beep(freq,start,dur,type,vol){if(!audioCtx||muted)return;var t0=audioCtx.currentTime+start;var osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.type=type||'sine';osc.frequency.value=freq;g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol||0.18,t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);osc.connect(g);g.connect(audioCtx.destination);osc.start(t0);osc.stop(t0+dur+0.02);}
+  function soundWin(){beep(660,0,0.12,'sine',0.16);beep(990,0.09,0.16,'sine',0.16);}
+  function soundLoss(){beep(240,0,0.18,'triangle',0.20);beep(150,0.12,0.22,'triangle',0.18);}
+  function soundFinish(){[523,659,784,1047].forEach(function(f,i){beep(f,i*0.14,0.30,'sine',0.17);});}
+  function confetti(){if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;var box=el('confetti');box.innerHTML='';var colors=['#0096ff','#4db8ff','#43e97b','#ffffff','#9ad0ff'];for(var i=0;i<60;i++){var s=document.createElement('span');s.className='conf-piece';s.style.left=Math.random()*100+'%';s.style.background=colors[i%colors.length];s.style.animationDuration=(1.6+Math.random()*1.4)+'s';s.style.animationDelay=(Math.random()*0.5)+'s';s.style.transform='rotate('+(Math.random()*360)+'deg)';box.appendChild(s);}}
+  function reset(){
+    balance=START;trial=0;tegleno={A:0,B:0,C:0,D:0};izbori={A:0,B:0,C:0,D:0};
+    var tipove=razburkai(['riskovChest','riskovRyadko','izgodenChest','izgodenRyadko']);
+    var bukvi=['A','B','C','D'];karta={};
+    bukvi.forEach(function(b,i){var pf=PROFILI[tipove[i]];karta[b]={pechalba:pf.pechalba,izgoden:pf.izgoden,grafik:razburkaiPoBlok(pf.zaguba)};});
+    zakliuchen=false;el('balance').textContent=balance;el('trial').textContent=1;el('total').textContent=HODOVE;el('feedback').innerHTML='';el('progressFill').style.width='0%';
+  }
+  function pokazhi(screen){el('intro').classList.add('hidden');el('game').classList.add('hidden');el('result').classList.add('hidden');el(screen).classList.remove('hidden');}
+  function izberi(deck){
+    if(zakliuchen||trial>=HODOVE)return;zakliuchen=true;
+    var d=karta[deck];var idx=tegleno[deck]%40;var win=d.pechalba,loss=d.grafik[idx];
+    balance+=win-loss;tegleno[deck]++;izbori[deck]++;trial++;
+    el('balance').textContent=balance;el('progressFill').style.width=(trial/HODOVE*100)+'%';
+    var fb=el('feedback');
+    if(loss>0){fb.innerHTML='<span class="fb-win">Печелиш '+win+' монети</span><span class="fb-loss">Губиш '+loss+' монети</span>';soundLoss();}
+    else{fb.innerHTML='<span class="fb-win">Печелиш '+win+' монети</span>';soundWin();}
+    if(trial>=HODOVE){setTimeout(finalizirai,650);return;}
+    el('trial').textContent=trial+1;setTimeout(function(){zakliuchen=false;},350);
+  }
+  function finalizirai(){
+    var adv=0,dis=0;['A','B','C','D'].forEach(function(b){if(karta[b].izgoden)adv+=izbori[b];else dis+=izbori[b];});
+    var net=adv-dis;
+    el('netNumber').textContent=(net>0?'плюс '+net:(net<0?'минус '+Math.abs(net):'0'));
+    el('adv').textContent=adv;el('dis').textContent=dis;el('finalBalance').textContent=balance;
+    var text;
+    if(net>10){text='Разчиташ добре сигналите на тялото си. Постепенно се насочи към изгодните избори и остави рисковите. Тялото ти усети кое е вярно още преди разума.';}
+    else if(net>=-10){text='Резултатът ти е смесен. Тялото ти вече долавя разликата, но разумът още се колебае между сигурния и рисковия избор.';}
+    else{text='Оставаш при рисковите избори. Бързата голяма печалба надделя над сигнала на тялото, който те предупреждаваше за скритата загуба.';}
+    el('interpret').textContent=text;pokazhi('result');confetti();soundFinish();
+  }
+  el('introTotal').textContent=HODOVE;
+  el('soundBtn').addEventListener('click',function(){muted=!muted;this.textContent=muted?'🔇':'🔊';if(!muted)ensureAudio();});
+  el('startBtn').addEventListener('click',function(){ensureAudio();reset();pokazhi('game');});
+  el('againBtn').addEventListener('click',function(){ensureAudio();reset();pokazhi('game');});
+  document.querySelectorAll('.deck').forEach(function(b){b.addEventListener('click',function(){izberi(b.getAttribute('data-deck'));});});
+  document.addEventListener('keydown',function(e){if(el('game').classList.contains('hidden'))return;var k=e.key.toLowerCase();if(k==='a'||k==='b'||k==='c'||k==='d'){izberi(k.toUpperCase());}});
+</script>
+</body>
+</html>
